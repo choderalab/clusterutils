@@ -6,32 +6,28 @@ import argparse
 
 
 def main():
-    args = parse_args()
+    args, exec_args = parse_args()
     pbs_gpufile_lines = read_pbs_gpufile()
     hostlist = extract_hostlist(pbs_gpufile_lines)
     hydra_hostlist_arg = construct_hydra_hostlist_arg(hostlist)
-    hydra_exec_lines = construct_hydra_exec_lines(hostlist, args.exec_args)
-    hydra_command_str = construct_hydra_command(hydra_hostlist_arg, hydra_exec_lines, args_mpi=args.mpi)
+    hydra_exec_lines = construct_hydra_exec_lines(hostlist, exec_args)
+    hydra_command_str = construct_hydra_command(hydra_hostlist_arg, hydra_exec_lines, args_mpitype=args.mpitype)
     write_configfile(hydra_command_str)
 
 
 def parse_args():
-    help_text = """Construct a configfile for MPICH2 mpirun from Torque/Moab $PBS_GPUFILE contents.
-
-    Usage:
-
-    python build-mpirun-configfile.py executable [args...]
-    mpirun -configfile configfile"""
-
+    help_text = 'Construct a configfile for MPICH2 mpirun from Torque/Moab $PBS_GPUFILE contents. ' \
+                'Put the command to be executed after the command for this script, e.g. ' \
+                '"python build-mpirun-configfile.py python yourscript.py -yourarg x"'
     argparser = argparse.ArgumentParser(description=help_text)
-    argparser.add_argument('exec_args', nargs='+', help='e.g. "python yourscript.py -arg1 x"')
     argparser.add_argument(
-        '-mpi', type='str', options=['conda'],
-        help='some versions of MPI, such as the conda-installable version,'
-             'can have the configfile text split over multiple lines'
+        '--mpitype', type=str, choices=['conda'],
+        help='some versions of MPI, such as the conda-installable version, ' \
+             'allow the configfile text to be split over multiple lines'
     )
-    args = argparser.parse_args()
-    return args
+    args, unknown_args = argparser.parse_known_args()
+    exec_args = unknown_args
+    return args, exec_args
 
 
 def read_pbs_gpufile(filename=os.environ['PBS_GPUFILE']):
@@ -44,7 +40,6 @@ def read_pbs_gpufile(filename=os.environ['PBS_GPUFILE']):
 def extract_hostlist(pbs_gpufile_lines):
     hostlist = []
     for (index, line) in enumerate(pbs_gpufile_lines):
-        # Extract hostname and gpuid
         # $PBS_GPUFILE format is like 'gpu-1-13-gpu0', where '%(hostname)s-gpu%(gpuid)s'
         line = line.strip()
         result = re.match('^(\S+)-gpu(\d)$', line)
@@ -63,12 +58,16 @@ def construct_hydra_hostlist_arg(hostlist):
     return text
 
 
-def construct_hydra_exec_lines(hostlist, exec_args):
+def construct_hydra_exec_lines(hostlist, exec_args, mpitype='hydra'):
     exec_arg_str = ' '.join(exec_args)
     exec_lines = []
     for (index, hostname, gpuid) in hostlist:
-        # outline = "-host %(hostname)s -env HOSTNAME %(hostname)s -env CUDA_VISIBLE_DEVICES %(gpuid)s %(exec_arg_str)s" % vars() # This works for non-hydra
-        exec_line = "-np 1 -env CUDA_VISIBLE_DEVICES %s %s" % (gpuid, exec_arg_str)  # This works for hydra
+        if mpitype == 'hydra':
+            exec_line = "-np 1 -env CUDA_VISIBLE_DEVICES %s %s" % (gpuid, exec_arg_str)
+        else:
+            exect_line = "-host %(hostname)s -env HOSTNAME %(hostname)s " \
+                         "-env CUDA_VISIBLE_DEVICES %(gpuid)s %(exec_arg_str)s" \
+                         % vars()
         # Different processes must be separated by colon ':'
         if (index + 1) != len(hostlist):
             exec_line += ' :'
@@ -76,8 +75,8 @@ def construct_hydra_exec_lines(hostlist, exec_args):
     return exec_lines
 
 
-def construct_hydra_command(hostlist_arg, exec_lines, args_mpi):
-    if args_mpi == 'conda':
+def construct_hydra_command(hostlist_arg, exec_lines, args_mpitype):
+    if args_mpitype == 'conda':
         delimiter = '\n'
     else:
         delimiter = ' '
