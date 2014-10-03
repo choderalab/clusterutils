@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import argparse
+import textwrap
 
 
 def main():
@@ -16,10 +17,16 @@ def main():
 
 
 def parse_args():
-    help_text = 'Construct a configfile for MPICH2 mpirun from Torque/Moab $PBS_GPUFILE contents. ' \
-                'Put the command to be executed after the command for this script, e.g. ' \
-                '"python build-mpirun-configfile.py python yourscript.py -yourarg x"'
-    argparser = argparse.ArgumentParser(description=help_text)
+    help_text = textwrap.dedent(r"""
+        Construct a configfile for MPICH2 mpirun from Torque/Moab $PBS_GPUFILE contents.
+
+        Put the command to be executed after the command for this script, e.g.
+        "python build-mpirun-configfile.py python yourscript.py -yourarg x".
+        Run in a batch job script or interactive session as follows:
+            python build-mpirun-configfile.py python yourscript.py -yourarg x
+            mpirun -configfile configfile"""
+    )
+    argparser = argparse.ArgumentParser(description=help_text, formatter_class=argparse.RawTextHelpFormatter)
     argparser.add_argument(
         '--mpitype', type=str, choices=['conda'],
         help='some versions of MPI, such as the conda-installable version, ' \
@@ -30,7 +37,9 @@ def parse_args():
     return args, exec_args
 
 
-def read_pbs_gpufile(filename=os.environ['PBS_GPUFILE']):
+def read_pbs_gpufile(filename=os.environ.get('PBS_GPUFILE')):
+    if filename == None:
+        raise Exception('PBS_GPUFILE environment variable not found.')
     infile = open(filename, 'r')
     lines = infile.readlines()
     infile.close()
