@@ -44,6 +44,15 @@ class QStatF:
         job_name = job_node.find('Job_Name').text
         print job_owner, job_id, job_name
 
+if __name__ == '__main__':
+    import argparse
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('-u', '--user', required=False)
+    args = argparser.parse_args()
+    qstatf = QStatF(args.user)
+
+# xml schema:
+#
 # Data
 #   Job
 #     Job_Id
@@ -81,10 +90,3 @@ class QStatF:
 #     job_radix
 #     submit_host
 #     gpu_flags
-
-if __name__ == '__main__':
-    import argparse
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument('-u', '--user', required=False)
-    args = argparser.parse_args()
-    qstatf = QStatF(args.user)
