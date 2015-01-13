@@ -3,7 +3,7 @@ import subprocess
 from setuptools import setup
 
 ##########################
-VERSION = "1.0"
+VERSION = "0.1"
 ISRELEASED = False
 __version__ = VERSION
 ##########################
