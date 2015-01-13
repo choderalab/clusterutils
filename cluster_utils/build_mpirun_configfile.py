@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os
 import re
-import sys
 import argparse
 import textwrap
 
@@ -21,7 +20,7 @@ def parse_args():
         Construct a configfile for MPICH2 mpirun from Torque/Moab $PBS_GPUFILE contents.
 
         Put the command to be executed after the command for this script, e.g.
-        "python build_mpirun_configfile.py python yourscript.py -yourarg x".
+        "build_mpirun_configfile python yourscript.py -yourarg x".
         Run in a batch job script or interactive session as follows:
             python build_mpirun_configfile.py python yourscript.py -yourarg x
             mpirun -configfile configfile"""

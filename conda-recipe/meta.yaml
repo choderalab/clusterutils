@@ -1,0 +1,25 @@
+package:
+  name: cluster_utils
+  version: !!str dev
+
+source:
+   git_url: https://github.com/choderalab/cluster-utils
+
+build:
+  entry_points:
+    - build_mpirun_configfile = cluster_utils.build_mpirun_configfile:main
+
+requirements:
+  build:
+    - python
+    - distribute
+
+  run:
+    - python
+    - argparse
+    - textwrap
+    - re
+
+about:
+  home: https://github.com/choderalab/cluster-utils
+  license: GNU Lesser General Public License v2 or later (LGPLv2+)
