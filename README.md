@@ -1,4 +1,4 @@
-cluster-utils
+clusterutils
 =============
 
 Tools for use in cluster environments.

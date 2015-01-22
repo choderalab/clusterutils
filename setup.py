@@ -45,7 +45,7 @@ def git_version():
 # Function for writing version.py (this will be copied to the install directory)
 ##########################
 
-# version_filepath = 'cluster_utils/version.py'
+# version_filepath = 'clusterutils/version.py'
 def write_version_py(filename=None):
     cnt = """# THIS FILE IS GENERATED FROM CLUSTER_UTILS SETUP.PY
 short_version = '%(version)s'
@@ -87,7 +87,7 @@ def find_packages():
     contributors, licensed under the BSD license.
     """
     packages = []
-    for dir, subdirs, files in os.walk('cluster_utils'):
+    for dir, subdirs, files in os.walk('clusterutils'):
         package = dir.replace(os.path.sep, '.')
         if '__init__.py' not in files:
             # not a package
@@ -102,7 +102,7 @@ def find_packages():
 
 # write_version_py()
 setup(
-    name = 'cluster_utils',
+    name = 'clusterutils',
     version = __version__,
     author = 'Daniel L Parton',
     author_email = 'daniel.parton@choderalab.org',
@@ -112,7 +112,7 @@ setup(
     packages = find_packages(),
     entry_points = {'console_scripts':
         [
-            'build_mpirun_configfile = cluster_utils.build_mpirun_configfile:main'
+            'build_mpirun_configfile = clusterutils.build_mpirun_configfile:main'
         ]
     },
 )
