@@ -12,7 +12,7 @@ def main():
     hydra_hostlist_arg = construct_hydra_hostlist_arg(hostlist)
     hydra_exec_lines = construct_hydra_exec_lines(hostlist, exec_args)
     hydra_command_str = construct_hydra_command(hydra_hostlist_arg, hydra_exec_lines, args_mpitype=args.mpitype)
-    write_configfile(hydra_command_str)
+    write_configfile(hydra_command_str, output_filepath=args.configfilepath)
 
 
 def parse_args():
@@ -30,6 +30,10 @@ def parse_args():
         '--mpitype', type=str, choices=['conda'],
         help='some versions of MPI, such as the conda-installable version, ' \
              'allow the configfile text to be split over multiple lines'
+    )
+    argparser.add_argument(
+        '--configfilepath', type=str, default='configfile',
+        help='optionally specify a filepath for the configfile (default: "configfile")'
     )
     args, unknown_args = argparser.parse_known_args()
     exec_args = unknown_args
@@ -92,8 +96,8 @@ def construct_hydra_command(hostlist_arg, exec_lines, args_mpitype):
     return text
 
 
-def write_configfile(command_str, filepath='configfile'):
-    with open(filepath, 'w') as ofile:
+def write_configfile(command_str, output_filepath='configfile'):
+    with open(output_filepath, 'w') as ofile:
         ofile.write(command_str)
 
 
