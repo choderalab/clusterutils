@@ -11,9 +11,9 @@ scripts/
 Scripts
 -------
 
-* build-mpirun-configfile.py
+* `build_mpirun_configfile`
   * builds a configfile for use with MPICH2 mpirun
   * used as a workaround to set the hosts and CUDA\_VISIBLE\_DEVICES environment variable properly on the cbio-cluster
-* monq.py
+* `monq.py`
   * Provides an interface to the XML returned by the command "qstat -f"
   * Allows custom XPath queries
