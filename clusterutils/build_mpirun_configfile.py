@@ -27,9 +27,10 @@ def parse_args():
     )
     argparser = argparse.ArgumentParser(description=help_text, formatter_class=argparse.RawTextHelpFormatter)
     argparser.add_argument(
-        '--mpitype', type=str, choices=['conda'],
+        '--mpitype', type=str, choices=['conda', 'general'], default='conda',
         help='some versions of MPI, such as the conda-installable version, ' \
-             'allow the configfile text to be split over multiple lines'
+             'allow the configfile text to be split over multiple lines. Select ' \
+             '"general" if this is not the case (default: conda).'
     )
     argparser.add_argument(
         '--configfilepath', type=str, default='configfile',
