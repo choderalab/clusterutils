@@ -13,7 +13,7 @@ Scripts
 * `monq.py`
   * Provides an interface to the XML returned by the command "qstat -f"
   * Allows custom XPath queries
-  * **Currntly outdated**
+  * **Currently outdated**
   
 Usage
 -----
