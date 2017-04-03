@@ -201,6 +201,38 @@ class LSFHydraConfigCreator(HydraConfigFileCreator):
     def hostfile(self):
         return os.environ.get('LSB_HOSTS')
 
+class SLURMHydraConfigCreator(HydraConfigFileCreator):
+  
+    def __init__(self, *args):
+        super(SLURMHydraConfigCreator, self).__init__(*args)
+        # Get out the nodelist and CVD for this proces
+        # This requires doing srun over python so that the local environment variables are not processed first
+        hosts_cvd = sp.check_output("srun python -c 'import os; print(os.environ.get(\"SLURMD_NODENAME\") + \" \" + os.environ.get(\"CUDA_VISIBLE_DEVICES\"))'", shell=True)
+        hosts_cvd = bytestring_to_string(hosts_cvd).split('\n')
+        host_list = []
+        for host_cvd_pair in hosts_cvd:
+            host, cvd = host_cvd_pair.split(' ')
+            host_list.append(host)
+            self.cuda_visible_devices[host] = cvd
+        self._host_list = tuple(host_list)
+
+    def extract_host_cuda_visible_devs(self):
+        host_list = self.extract_hostlist()
+        host_set = set(host_list)
+        cvd_list = []
+        for host in host_set:
+            cvds = self.cuda_visible_devices[host]
+            for cvd in cvds.split(','):
+                cvd_list.append([host, cvd])
+        return cvd_list
+
+    def extract_hostlist(self):
+        return self._host_list
+
+    @property
+    def hostfile(self):
+        return os.environ.get('SLURM_JOB_NODELIST')
+
 
 def main():
     args, exec_args = parse_args()
@@ -218,10 +250,14 @@ def figure_out_manager(mpiversion):
     lsf_host_file = os.environ.get('LSB_HOSTS')
     if lsf_host_file is not None:
         return LSFHydraConfigCreator(mpiversion)
+    slurm_host_file = os.environ.get('SLURM_JOB_NODELIST')
+    if slurm_host_file is not None:
+        return SLURMHydraConfigCreator(mpiversion)
     raise RuntimeError("Cannot determine job scheduler!\n"
                        "Please ensure one of the following environment variables is set for your job:\n"
                        "    PBS: \"PBS_GPUFILE\""
-                       "    LSF: \"LSB_HOSTS\"")
+                       "    LSF: \"LSB_HOSTS\""
+                       "  SLURM: \"SLURM_JOB_NODELIST\"")
 
 
 def parse_args():

@@ -3,8 +3,8 @@ import subprocess
 from setuptools import setup
 
 ##########################
-VERSION = "0.2.0"
-ISRELEASED = False
+VERSION = "0.3.0"
+ISRELEASED = True
 __version__ = VERSION
 ##########################
 
@@ -106,7 +106,7 @@ setup(
     version = __version__,
     author = 'Daniel L Parton',
     author_email = 'daniel.parton@choderalab.org',
-    description = 'Tools for running jobs on a cluster with resource manager, such as Torque.',
+    description = 'Tools for running jobs on a cluster with resource manager, such as Torque, LSF, or SLURM',
     license='GPLv2',
     long_description = read_readme('README.md'),
     packages = find_packages(),

@@ -9,10 +9,11 @@ Scripts
 * `build_mpirun_configfile`
   * builds a `hostfile` and `configfile` for use with MPICH3 mpirun
   * used as a workaround to set the hosts and CUDA\_VISIBLE\_DEVICES environment variable properly on the cbio-cluster 
-    (both hal and lila)
+    (both hal and lila), and on the the Merck GPU cluster (SLURM based)
 * `monq.py`
   * Provides an interface to the XML returned by the command "qstat -f"
   * Allows custom XPath queries
+  * **Currntly outdated**
   
 Usage
 -----
