@@ -207,7 +207,12 @@ class SLURMHydraConfigCreator(HydraConfigFileCreator):
         super(SLURMHydraConfigCreator, self).__init__(*args)
         # Get out the nodelist and CVD for this proces
         # This requires doing srun over python so that the local environment variables are not processed first
-        hosts_cvd = sp.check_output("srun python -c 'import os; print(os.environ.get(\"SLURMD_NODENAME\") + \" \" + os.environ.get(\"CUDA_VISIBLE_DEVICES\"))'", shell=True)
+        # This long string avoids creating an extra file that `srun` can process
+        # import os, execute 2 os.environ commands, stitch them together with a space.
+        # the "+" are inside the print command to make the 3 strings come together.
+        hosts_cvd = sp.check_output("srun python -c 'import os; print(os.environ.get(\"SLURMD_NODENAME\") + "
+                                    "\" \" + "
+                                    "os.environ.get(\"CUDA_VISIBLE_DEVICES\"))'", shell=True)
         hosts_cvd = bytestring_to_string(hosts_cvd).split('\n')
         host_list = []
         for host_cvd_pair in hosts_cvd:
