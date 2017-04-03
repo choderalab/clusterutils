@@ -18,17 +18,17 @@ Scripts
 Usage
 -----
 
-`build_mpirun_configfile` has a very simple usage syntax:
+`build_mpirun_configfile` is installed as a command line command and has a very simple usage syntax:
 ```shell
-python build_mpirun_configfile [--configfilepath {CONFIGFILE}] [--hostfilepath {HOSTFILE}] [--nocheckmpich] COMMANDS
+build_mpirun_configfile [--configfilepath {CONFIGFILE}] [--hostfilepath {HOSTFILE}] [--nocheckmpich] COMMANDS
 ```
 * `--configfilepath` sets the name of the Multi-Process Multi-Data (MPMD) settings (i.e. the config of each MPI task). 
   Default: `configfile`
 * `--hostfilepath` sets the name of the host file which houses the list of hosts, 1 line per process, repeating as 
   required and determined automatically from the scheduler.
   Default: `hostfile`
-* `--nocheckmpich` is a flag that, if set, ignores determining the MPICH version on disk. Right now `clusterutils` only 
-  can build against MPICH3 versions. The configuration and host files will still be built if this check fails, but a 
+* `--nocheckmpich` is a flag that, if set, ignores determining the MPICH version on disk. Right now `clusterutils` can 
+  only build against MPICH3 versions. The configuration and host files will still be built if this check fails, but a 
   warning is raised.
 * `COMMANDS` is the complete command that will be executed by each MPI task. For instance, if you are using a Pythons 
   script, your command may look like `python myscript.py`.
