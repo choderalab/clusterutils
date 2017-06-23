@@ -223,7 +223,11 @@ class SLURMHydraConfigCreator(HydraConfigFileCreator):
 
     def extract_host_cuda_visible_devs(self):
         host_list = self.extract_hostlist()
-        host_set = set(host_list)
+        # Ensure we get an ordered "set", normal set is un-ordered
+        # We don't care that its a dict, we only need the keys
+        # This fixes a rare bug appearing to involve SLURM and Hydra MPI's --control-port when the first node
+        # in the config file is not the control-port
+        host_set = collections.OrderedDict.fromkeys(sorted(host_list))
         cvd_list = []
         for host in host_set:
             cvds = self.cuda_visible_devices[host]
@@ -260,8 +264,8 @@ def figure_out_manager(mpiversion):
         return SLURMHydraConfigCreator(mpiversion)
     raise RuntimeError("Cannot determine job scheduler!\n"
                        "Please ensure one of the following environment variables is set for your job:\n"
-                       "    PBS: \"PBS_GPUFILE\""
-                       "    LSF: \"LSB_HOSTS\""
+                       "    PBS: \"PBS_GPUFILE\"\n"
+                       "    LSF: \"LSB_HOSTS\"\n"
                        "  SLURM: \"SLURM_JOB_NODELIST\"")
 
 
