@@ -3,7 +3,7 @@ package:
   version: !!str dev
 
 source:
-   git_url: https://github.com/choderalab/clusterutils
+   path: ../..
 
 build:
   entry_points:
@@ -12,7 +12,6 @@ build:
 requirements:
   build:
     - python
-    - distribute
 
   run:
     - python
